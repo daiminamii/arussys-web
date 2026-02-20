@@ -1,3 +1,4 @@
+// Stravaデータ可視化ページ（未実装）
 function StravaPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
