@@ -1,8 +1,20 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from '@/components/Layout';
+import HomePage from '@/pages/HomePage';
+import PortfolioPage from '@/pages/PortfolioPage';
+import StravaPage from '@/pages/StravaPage';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center">
-      <h1 className="text-4xl font-bold">ArusSystems</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="portfolio" element={<PortfolioPage />} />
+          <Route path="strava" element={<StravaPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
