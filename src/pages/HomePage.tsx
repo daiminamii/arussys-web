@@ -27,7 +27,7 @@ function HomePage() {
   return (
     <div>
       {/* ヒーロー */}
-      <section className="relative flex h-[80vh] items-center justify-center overflow-hidden">
+      <section className="relative flex h-[60vh] sm:h-[80vh] items-center justify-center overflow-hidden">
         {webglSupported ? (
           <Suspense fallback={<HeroFallback />}>
             <HeroScene />
@@ -38,7 +38,7 @@ function HomePage() {
 
         {/* テキスト */}
         <div className="relative z-10 text-center">
-          <div className="rounded-xl bg-gray-950/60 px-8 py-6 backdrop-blur-sm">
+          <div className="rounded-xl bg-gray-950/60 px-4 py-4 sm:px-8 sm:py-6 backdrop-blur-sm">
             <h1 className="mb-3 text-5xl font-bold tracking-tight sm:text-6xl">
               Arus Systems
             </h1>
@@ -50,7 +50,7 @@ function HomePage() {
       </section>
 
       {/* プロフィール */}
-      <section className="mx-auto max-w-3xl px-4 py-20">
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:py-20">
         <h2 className="mb-6 text-2xl font-bold">About</h2>
         <div className="space-y-4 text-gray-400 leading-relaxed">
           <p>
