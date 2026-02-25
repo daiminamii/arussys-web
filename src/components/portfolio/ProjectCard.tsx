@@ -1,17 +1,22 @@
 // プロジェクトカード（タイトル / 説明 / タグ / リンク）
 import type { Project } from '@/types/portfolio';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 function ProjectCard({ project }: { project: Project }) {
+  const { language, t } = useLanguage();
+
   return (
     <article className="rounded-lg border border-gray-800 bg-gray-900 p-6 transition-colors hover:border-gray-600">
       {/* タイトル + 年 */}
       <div className="mb-3 flex items-baseline justify-between gap-4">
-        <h3 className="text-lg font-semibold text-gray-100">{project.title}</h3>
+        <h3 className="text-lg font-semibold text-gray-100">
+          {project.title[language]}
+        </h3>
         <span className="shrink-0 text-sm text-gray-500">{project.year}</span>
       </div>
 
       <p className="mb-4 text-sm leading-relaxed text-gray-400">
-        {project.description}
+        {project.description[language]}
       </p>
 
       {/* 技術タグ */}
@@ -36,7 +41,7 @@ function ProjectCard({ project }: { project: Project }) {
               rel="noopener noreferrer"
               className="text-gray-400 underline underline-offset-2 hover:text-gray-200"
             >
-              Website
+              {t.project.website}
             </a>
           )}
           {project.github && (
@@ -46,7 +51,7 @@ function ProjectCard({ project }: { project: Project }) {
               rel="noopener noreferrer"
               className="text-gray-400 underline underline-offset-2 hover:text-gray-200"
             >
-              GitHub
+              {t.project.github}
             </a>
           )}
         </div>

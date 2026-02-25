@@ -1,6 +1,7 @@
 // ルート定義（SPA、Layout共通レイアウト）
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { LanguageProvider } from '@/i18n/LanguageContext';
 import Layout from '@/components/Layout';
 import PortfolioPage from '@/pages/PortfolioPage';
 import StravaPage from '@/pages/StravaPage';
@@ -10,22 +11,24 @@ const HomePage = lazy(() => import('@/pages/HomePage'));
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route
-            index
-            element={
-              <Suspense fallback={null}>
-                <HomePage />
-              </Suspense>
-            }
-          />
-          <Route path="portfolio" element={<PortfolioPage />} />
-          <Route path="strava" element={<StravaPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route
+              index
+              element={
+                <Suspense fallback={null}>
+                  <HomePage />
+                </Suspense>
+              }
+            />
+            <Route path="portfolio" element={<PortfolioPage />} />
+            <Route path="strava" element={<StravaPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }
 

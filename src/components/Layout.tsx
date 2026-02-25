@@ -1,13 +1,16 @@
 // 共通レイアウト（ヘッダー / メイン / フッター）
 import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import type { Translations } from '@/i18n/types';
+import { useLanguage } from '@/i18n/LanguageContext';
+import LanguageSwitch from './LanguageSwitch';
 import MobileNav from './MobileNav';
 
 // デスクトップナビとMobileNavの両方で使用
-export const navItems: { to: string; label: string; end?: boolean }[] = [
-  { to: '/', label: 'Home', end: true },
-  { to: '/portfolio', label: 'Portfolio' },
-  { to: '/strava', label: 'Strava' },
+export const navKeys: { to: string; key: keyof Translations['nav']; end?: boolean }[] = [
+  { to: '/', key: 'home', end: true },
+  { to: '/portfolio', key: 'portfolio' },
+  { to: '/strava', key: 'strava' },
 ];
 
 export const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -15,6 +18,7 @@ export const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 function Layout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 flex flex-col">
@@ -26,22 +30,25 @@ function Layout() {
           </NavLink>
 
           {/* デスクトップナビ */}
-          <ul className="hidden md:flex gap-6 text-sm">
-            {navItems.map((item) => (
-              <li key={item.to}>
-                <NavLink to={item.to} end={item.end} className={navLinkClass}>
-                  {item.label}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+          <div className="hidden md:flex items-center gap-6">
+            <ul className="flex gap-6 text-sm">
+              {navKeys.map((item) => (
+                <li key={item.to}>
+                  <NavLink to={item.to} end={item.end} className={navLinkClass}>
+                    {t.nav[item.key]}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+            <LanguageSwitch />
+          </div>
 
           {/* ハンバーガーボタン（モバイル） */}
           <button
             className="md:hidden p-2 text-gray-400 hover:text-white"
             onClick={() => setMenuOpen((prev) => !prev)}
             aria-expanded={menuOpen}
-            aria-label={menuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            aria-label={menuOpen ? t.aria.closeMenu : t.aria.openMenu}
           >
             <svg
               className="h-6 w-6"
@@ -70,7 +77,7 @@ function Layout() {
 
       {/* フッター */}
       <footer className="border-t border-gray-800 py-6 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Arus Systems
+        {t.footer.copyright.replace('{year}', String(new Date().getFullYear()))}
       </footer>
     </div>
   );

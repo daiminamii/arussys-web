@@ -1,6 +1,9 @@
+// モバイルナビ（フルスクリーン オーバーレイ + フォーカストラップ）
 import { useCallback, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { navItems, navLinkClass } from './Layout';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { navKeys, navLinkClass } from './Layout';
+import LanguageSwitch from './LanguageSwitch';
 
 interface MobileNavProps {
   onClose: () => void;
@@ -8,6 +11,7 @@ interface MobileNavProps {
 
 function MobileNav({ onClose }: MobileNavProps) {
   const location = useLocation();
+  const { t } = useLanguage();
   const initialPathname = useRef(location.pathname);
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -72,7 +76,7 @@ function MobileNav({ onClose }: MobileNavProps) {
       className="fixed inset-0 z-50 md:hidden bg-gray-950/95 backdrop-blur-sm animate-[fade-in_0.2s_ease]"
       role="dialog"
       aria-modal="true"
-      aria-label="サイトメニュー"
+      aria-label={t.aria.siteMenu}
       onClick={onClose}
     >
       {/* 閉じるボタン */}
@@ -80,7 +84,7 @@ function MobileNav({ onClose }: MobileNavProps) {
         ref={closeButtonRef}
         className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white"
         onClick={onClose}
-        aria-label="メニューを閉じる"
+        aria-label={t.aria.closeMenu}
       >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -91,7 +95,7 @@ function MobileNav({ onClose }: MobileNavProps) {
         className="flex flex-col items-center justify-center h-full gap-2"
         onClick={(e) => e.stopPropagation()}
       >
-        {navItems.map((item) => (
+        {navKeys.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
@@ -101,9 +105,14 @@ function MobileNav({ onClose }: MobileNavProps) {
             }
             onClick={onClose}
           >
-            {item.label}
+            {t.nav[item.key]}
           </NavLink>
         ))}
+
+        {/* 区切り線 + 言語切替 */}
+        <div className="mt-4 pt-4 border-t border-gray-800">
+          <LanguageSwitch />
+        </div>
       </nav>
     </div>
   );
