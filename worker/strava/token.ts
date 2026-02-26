@@ -26,6 +26,7 @@ export async function exchangeCode(env: Env, code: string): Promise<TokenRespons
 
   if (!res.ok) {
     const text = await res.text();
+    console.error('[token] Exchange failed:', res.status, text);
     throw new Error(`Token exchange failed: ${res.status} ${text}`);
   }
 
