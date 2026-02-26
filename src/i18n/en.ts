@@ -35,8 +35,8 @@ export const en: Translations = {
   strava: {
     heading: 'Strava',
     subtitle: 'Training activities from Strava.',
+    connect: 'Connect with Strava',
     reconnect: 'Reconnect with Strava',
-    redirecting: 'Redirecting to Strava...',
     authDenied: 'Authorization was denied.',
     authError: 'Authentication failed. Please try again.',
     dateLabel: 'Date',

@@ -35,8 +35,8 @@ export const ja: Translations = {
   strava: {
     heading: 'Strava',
     subtitle: 'Strava のトレーニングアクティビティ。',
+    connect: 'Strava に接続',
     reconnect: 'Strava に再接続',
-    redirecting: 'Strava にリダイレクト中...',
     authDenied: '認可が拒否されました。',
     authError: '認証に失敗しました。もう一度お試しください。',
     dateLabel: '日付',

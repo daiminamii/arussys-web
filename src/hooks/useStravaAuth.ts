@@ -1,23 +1,7 @@
-// Strava 認証状態管理フック（自動リダイレクト付き）
-// TODO: 現在は未認証で /strava にアクセスすると自動で Strava OAuth にリダイレクトされる。
-//       任意の訪問者が強制的に連携させられる問題がある。
-//       → ランディング画面に「Connect with Strava」ボタンを表示し、ユーザー操作でリダイレクトする方式に変更する。
+// Strava 認証状態管理フック
 import { useState, useEffect, useCallback } from 'react';
 import type { StravaAuthStatus } from '@/types/strava';
 import { fetchAuthStatus, disconnect as apiDisconnect } from '@/services/stravaApi';
-
-const REDIRECT_KEY = 'strava_redirect_attempted';
-
-// sessionStorage ヘルパー（Safari プライベートモード対策）
-function getStorage(key: string): string | null {
-  try { return sessionStorage.getItem(key); } catch { return null; }
-}
-function setStorage(key: string, value: string): void {
-  try { sessionStorage.setItem(key, value); } catch { /* ignore */ }
-}
-function removeStorage(key: string): void {
-  try { sessionStorage.removeItem(key); } catch { /* ignore */ }
-}
 
 interface UseStravaAuth {
   status: StravaAuthStatus | null;
@@ -40,9 +24,6 @@ export function useStravaAuth(): UseStravaAuth {
     try {
       const data = await fetchAuthStatus();
       setStatus(data);
-      if (data.authenticated) {
-        removeStorage(REDIRECT_KEY);
-      }
     } catch {
       setError('Failed to check auth status');
     } finally {
@@ -51,7 +32,7 @@ export function useStravaAuth(): UseStravaAuth {
   }, []);
 
   useEffect(() => {
-    // URL ?error= パラメータチェック（ガード1）
+    // URL ?error= パラメータチェック（OAuth コールバックからのエラー）
     const params = new URLSearchParams(window.location.search);
     const urlError = params.get('error');
     if (urlError) {
@@ -64,17 +45,6 @@ export function useStravaAuth(): UseStravaAuth {
 
     refresh();
   }, [refresh]);
-
-  // 自動リダイレクト（ガード2: sessionStorage）
-  // TODO: 自動リダイレクトを廃止し、ボタン操作に変更する（上部コメント参照）
-  useEffect(() => {
-    if (loading || !status || status.authenticated || authError || error) return;
-
-    if (getStorage(REDIRECT_KEY)) return;
-
-    setStorage(REDIRECT_KEY, '1');
-    window.location.href = '/api/strava/auth';
-  }, [loading, status, authError, error]);
 
   const disconnect = useCallback(async () => {
     try {
