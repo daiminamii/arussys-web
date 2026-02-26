@@ -22,7 +22,22 @@ export interface Translations {
     };
   };
   portfolio: { heading: string; subtitle: string };
-  strava: { heading: string; comingSoon: string };
+  strava: {
+    heading: string;
+    subtitle: string;
+    reconnect: string;
+    redirecting: string;
+    authDenied: string;
+    authError: string;
+    dateLabel: string;
+    loading: string;
+    distance: string;
+    time: string;
+    elevation: string;
+    noActivities: string;
+    disconnect: string;
+    disconnectConfirm: string;
+  };
   project: { website: string; github: string };
   footer: { copyright: string };
 }

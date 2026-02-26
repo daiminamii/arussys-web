@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "tsc -b && vite build && npx wrangler dev",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
@@ -17,6 +17,7 @@
     "three": "^0.183.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260304.0",
     "@tailwindcss/vite": "^4.2.0",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.0",
