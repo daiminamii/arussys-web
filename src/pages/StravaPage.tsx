@@ -5,17 +5,17 @@ import { useStravaAuth } from '@/hooks/useStravaAuth';
 import PoweredByStrava from '@/components/strava/PoweredByStrava';
 import ActivityList from '@/components/strava/ActivityList';
 
-/** 今日の JST 日付を YYYY-MM-DD で返す */
-function todayJST(): string {
+/** 現在の JST 月を YYYY-MM で返す */
+function currentMonthJST(): string {
   const now = new Date();
   const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  return jst.toISOString().slice(0, 10);
+  return jst.toISOString().slice(0, 7);
 }
 
 function StravaPage() {
   const { t } = useLanguage();
   const { status, loading, error, authError } = useStravaAuth();
-  const [date, setDate] = useState(todayJST);
+  const [month, setMonth] = useState(currentMonthJST);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
@@ -55,18 +55,18 @@ function StravaPage() {
       {status?.authenticated && (
         <div className="space-y-8">
           <div className="flex items-center gap-3">
-            <label htmlFor="strava-date" className="text-sm text-gray-300">
-              {t.strava.dateLabel}
+            <label htmlFor="strava-month" className="text-sm text-gray-300">
+              {t.strava.monthLabel}
             </label>
             <input
-              id="strava-date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              id="strava-month"
+              type="month"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
               className="rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-white"
             />
           </div>
-          <ActivityList date={date} />
+          <ActivityList month={month} />
         </div>
       )}
     </div>

@@ -1,20 +1,10 @@
 // 個別アクティビティカード
 import type { StravaActivity } from '@/types/strava';
+import { formatDistance, formatTime } from '@/utils/format';
 import { useLanguage } from '@/i18n/LanguageContext';
 
 interface Props {
   activity: StravaActivity;
-}
-
-function formatDistance(meters: number): string {
-  return (meters / 1000).toFixed(1) + ' km';
-}
-
-function formatTime(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}m`;
 }
 
 function formatDate(iso: string): string {
@@ -34,7 +24,12 @@ function ActivityCard({ activity }: Props) {
         <h3 className="font-semibold text-white">{activity.name}</h3>
         <span className="text-xs text-gray-400">{activity.sport_type}</span>
       </div>
-      <p className="mb-3 text-xs text-gray-500">{formatDate(activity.start_date)}</p>
+      <p className="mb-3 text-xs text-gray-500">
+        {formatDate(activity.start_date)}
+        {activity.device_name && (
+          <span className="ml-2 truncate text-gray-600">{activity.device_name}</span>
+        )}
+      </p>
       <div className="grid grid-cols-3 gap-2 text-center">
         <div>
           <p className="text-xs text-gray-400">{t.strava.distance}</p>

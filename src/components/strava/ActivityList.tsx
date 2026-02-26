@@ -1,15 +1,17 @@
-// アクティビティ一覧（日付ベース取得）
+// アクティビティ一覧（月ベース + デバイスグルーピング）
 import { useState, useEffect } from 'react';
 import type { StravaActivity } from '@/types/strava';
-import { fetchActivities, dateToTimestamps } from '@/services/stravaApi';
+import { fetchActivities, monthToTimestamps } from '@/services/stravaApi';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { groupByDevice, borderColorByIndex } from '@/utils/deviceMapping';
+import DeviceSummary from './DeviceSummary';
 import ActivityCard from './ActivityCard';
 
 interface Props {
-  date: string;
+  month: string;
 }
 
-function ActivityList({ date }: Props) {
+function ActivityList({ month }: Props) {
   const { t } = useLanguage();
   const [activities, setActivities] = useState<StravaActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ function ActivityList({ date }: Props) {
     setLoading(true);
     setError(null);
 
-    const { after, before } = dateToTimestamps(date);
+    const { after, before } = monthToTimestamps(month);
     fetchActivities(after, before)
       .then((data) => {
         if (!cancelled) setActivities(data);
@@ -35,7 +37,7 @@ function ActivityList({ date }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [date]);
+  }, [month]);
 
   if (loading) {
     return <p className="text-gray-400">{t.strava.loading}</p>;
@@ -49,10 +51,27 @@ function ActivityList({ date }: Props) {
     return <p className="text-gray-400">{t.strava.noActivities}</p>;
   }
 
+  const groups = groupByDevice(activities, t.strava.unknownDevice);
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {activities.map((a) => (
-        <ActivityCard key={a.id} activity={a} />
+    <div className="space-y-8">
+      {activities.length === 200 && (
+        <p className="text-sm text-yellow-400">{t.strava.limitWarning}</p>
+      )}
+
+      <DeviceSummary groups={groups} />
+
+      {groups.map((group, i) => (
+        <div key={group.deviceName}>
+          <h2 className={`mb-4 border-b ${borderColorByIndex(i)} pb-2 text-lg font-semibold text-white`}>
+            {group.deviceName} ({group.count})
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {group.activities.map((a) => (
+              <ActivityCard key={a.id} activity={a} />
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );

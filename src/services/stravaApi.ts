@@ -7,10 +7,14 @@ export async function fetchAuthStatus(): Promise<StravaAuthStatus> {
   return res.json();
 }
 
-/** YYYY-MM-DD → JST ベース Unix timestamp (after, before) */
-export function dateToTimestamps(dateStr: string): { after: number; before: number } {
-  const after = Date.parse(dateStr + 'T00:00:00+09:00') / 1000;
-  const before = Date.parse(dateStr + 'T23:59:59+09:00') / 1000;
+/** YYYY-MM → JST ベース Unix timestamp (月初 00:00 〜 翌月初 00:00) */
+export function monthToTimestamps(monthStr: string): { after: number; before: number } {
+  const [year, month] = monthStr.split('-').map(Number);
+  const after = Date.parse(`${year}-${String(month).padStart(2, '0')}-01T00:00:00+09:00`) / 1000;
+  // 翌月1日 00:00:00 JST
+  const nextMonth = month === 12 ? 1 : month + 1;
+  const nextYear = month === 12 ? year + 1 : year;
+  const before = Date.parse(`${nextYear}-${String(nextMonth).padStart(2, '0')}-01T00:00:00+09:00`) / 1000;
   return { after, before };
 }
 

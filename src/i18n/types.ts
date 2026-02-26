@@ -29,12 +29,17 @@ export interface Translations {
     reconnect: string;
     authDenied: string;
     authError: string;
-    dateLabel: string;
+    monthLabel: string;
     loading: string;
     distance: string;
     time: string;
     elevation: string;
     noActivities: string;
+    activities: string;
+    totalDistance: string;
+    totalTime: string;
+    unknownDevice: string;
+    limitWarning: string;
     disconnect: string;
     disconnectConfirm: string;
   };
