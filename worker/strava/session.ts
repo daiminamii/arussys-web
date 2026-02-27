@@ -37,6 +37,15 @@ export async function saveSession(env: Env, sessionId: string, data: SessionData
   });
 }
 
+// owner:latest からオーナーセッションを取得（訪問者向け公開表示用）
+export async function getOwnerSession(env: Env): Promise<{ sessionId: string; session: SessionData } | null> {
+  const sessionId = await env.STRAVA_KV.get('owner:latest');
+  if (!sessionId) return null;
+  const session = await env.STRAVA_KV.get<SessionData>(`session:${sessionId}`, 'json');
+  if (!session) return null;
+  return { sessionId, session };
+}
+
 // GET /api/strava/status — セッション有無を返却（トークン非露出）
 export async function handleStatus(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'GET') return errorResponse('Method not allowed', 405);

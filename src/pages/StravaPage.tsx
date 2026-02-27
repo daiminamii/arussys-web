@@ -1,7 +1,6 @@
 // Strava データ可視化ページ
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { useStravaAuth } from '@/hooks/useStravaAuth';
 import PoweredByStrava from '@/components/strava/PoweredByStrava';
 import ActivityList from '@/components/strava/ActivityList';
 
@@ -14,8 +13,20 @@ function currentMonthJST(): string {
 
 function StravaPage() {
   const { t } = useLanguage();
-  const { status, loading, error, authError } = useStravaAuth();
   const [month, setMonth] = useState(currentMonthJST);
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  // OAuth コールバックからのエラーパラメータを処理
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlError = params.get('error');
+    if (urlError) {
+      setAuthError(urlError === 'denied' ? 'denied' : 'error');
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete('error');
+      window.history.replaceState({}, '', clean.pathname);
+    }
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16">
@@ -25,50 +36,32 @@ function StravaPage() {
         <PoweredByStrava />
       </div>
 
-      {error && (
+      {authError === 'denied' && (
+        <div className="mb-6 rounded-lg border border-yellow-800 bg-yellow-900/20 p-3 text-sm text-yellow-300">
+          {t.strava.authDenied}
+        </div>
+      )}
+      {authError === 'error' && (
         <div className="mb-6 rounded-lg border border-red-800 bg-red-900/20 p-3 text-sm text-red-300">
-          {error}
+          {t.strava.authError}
         </div>
       )}
 
-      {loading && !status && (
-        <p className="text-gray-400">{t.strava.loading}</p>
-      )}
-
-      {status && !status.authenticated && (
-        <div className="space-y-4">
-          {authError === 'denied' && (
-            <p className="text-yellow-400">{t.strava.authDenied}</p>
-          )}
-          {authError === 'error' && (
-            <p className="text-red-400">{t.strava.authError}</p>
-          )}
-          <a
-            href="/api/strava/auth"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#FC4C02] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#e04400]"
-          >
-            {t.strava.connect}
-          </a>
+      <div className="space-y-8">
+        <div className="flex items-center gap-3">
+          <label htmlFor="strava-month" className="text-sm text-gray-300">
+            {t.strava.monthLabel}
+          </label>
+          <input
+            id="strava-month"
+            type="month"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-white"
+          />
         </div>
-      )}
-
-      {status?.authenticated && (
-        <div className="space-y-8">
-          <div className="flex items-center gap-3">
-            <label htmlFor="strava-month" className="text-sm text-gray-300">
-              {t.strava.monthLabel}
-            </label>
-            <input
-              id="strava-month"
-              type="month"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="rounded-lg border border-gray-600 bg-gray-800 px-3 py-1.5 text-sm text-white"
-            />
-          </div>
-          <ActivityList month={month} />
-        </div>
-      )}
+        <ActivityList month={month} />
+      </div>
     </div>
   );
 }

@@ -80,6 +80,9 @@ export async function handleCallback(request: Request, env: Env): Promise<Respon
     athleteId: tokenData.athlete.id,
   });
 
+  // オーナーの最新セッションを記録（訪問者向け公開表示用）
+  await env.STRAVA_KV.put('owner:latest', sessionId, { expirationTtl: SESSION_TTL });
+
   // Cookie セット + /strava にリダイレクト
   return new Response(null, {
     status: 302,

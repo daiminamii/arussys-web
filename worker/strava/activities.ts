@@ -1,18 +1,31 @@
 // GET /api/strava/activities — アクティビティ一覧（KV キャッシュ付き）
 import type { Env } from '../env';
 import { STRAVA_API_BASE, CACHE_TTL } from './constants';
-import { getSession, getSessionId } from './session';
+import { getSession, getSessionId, getOwnerSession, type SessionData } from './session';
 import { ensureFreshToken } from './token';
 import { errorResponse } from '../utils/response';
 
 export async function handleActivities(request: Request, env: Env): Promise<Response> {
   if (request.method !== 'GET') return errorResponse('Method not allowed', 405);
 
-  const sessionId = getSessionId(request);
-  if (!sessionId) return errorResponse('Unauthorized', 401);
+  // セッション解決: Cookie → owner fallback → 空配列
+  let resolvedSessionId: string;
+  let resolvedSession: SessionData;
 
-  const session = await getSession(request, env);
-  if (!session) return errorResponse('Session expired', 401);
+  const cookieSessionId = getSessionId(request);
+  const cookieSession = cookieSessionId ? await getSession(request, env) : null;
+
+  if (cookieSessionId && cookieSession) {
+    resolvedSessionId = cookieSessionId;
+    resolvedSession = cookieSession;
+  } else {
+    const owner = await getOwnerSession(env);
+    if (!owner) {
+      return new Response('[]', { headers: { 'Content-Type': 'application/json' } });
+    }
+    resolvedSessionId = owner.sessionId;
+    resolvedSession = owner.session;
+  }
 
   const url = new URL(request.url);
   const afterRaw = url.searchParams.get('after');
@@ -37,7 +50,7 @@ export async function handleActivities(request: Request, env: Env): Promise<Resp
   }
 
   // KV キャッシュチェック
-  const cacheKey = `cache:activities:${session.athleteId}:${after ?? ''}:${before ?? ''}:${perPage}`;
+  const cacheKey = `cache:activities:${resolvedSession.athleteId}:${after ?? ''}:${before ?? ''}:${perPage}`;
   const cached = await env.STRAVA_KV.get(cacheKey);
   if (cached) {
     return new Response(cached, {
@@ -48,7 +61,7 @@ export async function handleActivities(request: Request, env: Env): Promise<Resp
   // トークンリフレッシュ（必要時）
   let accessToken: string;
   try {
-    accessToken = await ensureFreshToken(env, sessionId, session);
+    accessToken = await ensureFreshToken(env, resolvedSessionId, resolvedSession);
   } catch {
     return errorResponse('Token refresh failed', 401);
   }

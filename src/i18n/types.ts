@@ -25,8 +25,6 @@ export interface Translations {
   strava: {
     heading: string;
     subtitle: string;
-    connect: string;
-    reconnect: string;
     authDenied: string;
     authError: string;
     monthLabel: string;
