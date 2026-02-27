@@ -4,6 +4,7 @@ import { handleAuth, handleCallback } from './strava/auth';
 import { handleActivities } from './strava/activities';
 import { handleDisconnect } from './strava/disconnect';
 import { handleStatus } from './strava/session';
+import { handleContact } from './contact';
 import { errorResponse } from './utils/response';
 
 export default {
@@ -38,6 +39,8 @@ async function handleApi(request: Request, env: Env, url: URL): Promise<Response
       return handleDisconnect(request, env);
     case '/api/strava/status':
       return handleStatus(request, env);
+    case '/api/contact':
+      return handleContact(request, env);
     default:
       return errorResponse('Not found', 404);
   }

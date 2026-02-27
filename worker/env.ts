@@ -4,4 +4,6 @@ export interface Env {
   STRAVA_KV: KVNamespace;
   CLIENT_ID: string;
   CLIENT_SECRET: string;
+  RESEND_API_KEY: string;
+  CONTACT_EMAIL: string;
 }

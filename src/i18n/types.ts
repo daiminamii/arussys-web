@@ -41,6 +41,20 @@ export interface Translations {
     disconnect: string;
     disconnectConfirm: string;
   };
+  contact: {
+    heading: string;
+    subtitle: string;
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    messagePlaceholder: string;
+    submit: string;
+    sending: string;
+    success: string;
+    errorRequired: string;
+    errorEmail: string;
+    errorRateLimit: string;
+    errorGeneric: string;
+  };
   project: { website: string; github: string };
   footer: { copyright: string };
 }
